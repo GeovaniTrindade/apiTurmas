@@ -49,7 +49,9 @@ public class TurmaRepository {
 	public Turma findById(UUID idTurma) throws Exception {
 
 		Connection connection = ConnectionFactory.getConnection();
-		PreparedStatement statement = connection.prepareStatement("SELECT * FROM turma WHERE idTurma=?");
+		PreparedStatement statement = connection.prepareStatement(
+				"select t.idTurma, t.nome as nomeTurma, t.dataInicio, t.dataTermino, p.idProfessor as IdProfessor, p.nome as nomeProfessor, p.telefone "
+						+ "from turma t inner join professor p on p.idProfessor = t.professor_id " + "where idTurma=?");
 		statement.setObject(1, idTurma);
 
 		ResultSet resultSet = statement.executeQuery();
@@ -62,10 +64,12 @@ public class TurmaRepository {
 			turma.setProfessor(new Professor());
 
 			turma.setIdTurma(UUID.fromString(resultSet.getString("idTurma")));
-			turma.setNome(resultSet.getString("nome"));
+			turma.setNome(resultSet.getString("nomeTurma"));
 			turma.setDataInicio(new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("dataInicio")));
 			turma.setDataTermino(new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("dataTermino")));
-			turma.getProfessor().setIdProfessor(UUID.fromString(resultSet.getString("professor_id")));
+			turma.getProfessor().setIdProfessor(UUID.fromString(resultSet.getString("idProfessor")));
+			turma.getProfessor().setNome(resultSet.getString("nomeProfessor"));
+			turma.getProfessor().setTelefone(resultSet.getString("telefone"));
 
 		}
 
@@ -90,8 +94,8 @@ public class TurmaRepository {
 		Connection connection = ConnectionFactory.getConnection();
 
 		PreparedStatement statement = connection.prepareStatement(
-				"select t.idTurma, t.nome as NomeTurma, t.dataInicio, t.dataTermino, p.idProfessor as IdProfessor, p.nome as NomeProfessor "
-						+ "from turma t inner join professor p on p.idProfessor = t.professor_id order by t.nome");
+				"select t.idTurma, t.nome as nomeTurma, t.dataInicio, t.dataTermino, p.idProfessor as IdProfessor, p.nome as nomeProfessor, p.telefone "
+						+ "from turma t inner join professor p on p.idProfessor = t.professor_id " + "order by t.nome");
 
 		ResultSet resultSet = statement.executeQuery();
 
@@ -103,11 +107,12 @@ public class TurmaRepository {
 			turma.setProfessor(new Professor());
 
 			turma.setIdTurma(UUID.fromString(resultSet.getString("idTurma")));
-			turma.setNome(resultSet.getString("nome"));
+			turma.setNome(resultSet.getString("nomeTurma"));
 			turma.setDataInicio(new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("dataInicio")));
 			turma.setDataTermino(new SimpleDateFormat("yyyy-MM-dd").parse(resultSet.getString("dataTermino")));
 			turma.getProfessor().setIdProfessor(UUID.fromString(resultSet.getString("idProfessor")));
-			turma.getProfessor().setNome(resultSet.getString("nome"));
+			turma.getProfessor().setNome(resultSet.getString("nomeProfessor"));
+			turma.getProfessor().setTelefone(resultSet.getString("telefone"));
 
 			lista.add(turma);
 		}
